@@ -1,0 +1,21 @@
+{
+    "name": "admin/coupons",
+    "description": "Laravel package for managing discount coupons in the admin panel.",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Admin\\Coupons\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Admin\\Coupons\\CouponsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
