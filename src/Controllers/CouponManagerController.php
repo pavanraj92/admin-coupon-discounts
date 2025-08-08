@@ -29,8 +29,7 @@ class CouponManagerController extends Controller
                 ->latest()
                 ->paginate(Coupon::getPerPageLimit())
                 ->withQueryString();
-
-            return view('coupons::index', compact('coupons'));
+            return view('coupons::admin.index', compact('coupons'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupons: ' . $e->getMessage());
         }
@@ -40,7 +39,7 @@ class CouponManagerController extends Controller
     {
         try {
             $types = config('coupons.types', []);
-            return view('coupons::createOrEdit', compact('types'));
+            return view('coupons::admin.createOrEdit', compact('types'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupon creation form: ' . $e->getMessage());
         }
@@ -59,7 +58,7 @@ class CouponManagerController extends Controller
     public function show(Coupon $coupon)
     {
         try {
-            return view('coupons::show', compact('coupon'));
+            return view('coupons::admin.show', compact('coupon'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupon details: ' . $e->getMessage());
         }
@@ -69,7 +68,7 @@ class CouponManagerController extends Controller
     {
         try {
             $types = config('coupons.types', []);
-            return view('coupons::createOrEdit', compact('coupon', 'types'));
+            return view('coupons::admin.createOrEdit', compact('coupon', 'types'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupon for editing: ' . $e->getMessage());
         }
