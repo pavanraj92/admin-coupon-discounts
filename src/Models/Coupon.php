@@ -2,6 +2,9 @@
 
 namespace Admin\Coupons\Models;
 
+use admin\categories\Models\Category;
+use admin\courses\Models\Course;
+use admin\products\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
@@ -10,6 +13,30 @@ use Kyslik\ColumnSortable\Sortable;
 class Coupon extends Model
 {
     use SoftDeletes, Sortable;
+
+    public function categories()
+    {
+        if (class_exists('admin\\categories\\Models\\Category')) {
+            return $this->belongsToMany(Category::class, 'coupon_category');
+        }
+        return $this->belongsToMany('App\\Models\\Category', 'coupon_category'); // fallback, or return null
+    }
+
+    public function products()
+    {
+        if (class_exists('admin\\products\\Models\\Product')) {
+            return $this->belongsToMany(Product::class, 'coupon_product');
+        }
+        return $this->belongsToMany('App\\Models\\Product', 'coupon_product'); // fallback, or return null
+    }
+
+    public function courses()
+    {
+        if (class_exists('admin\\courses\\Models\\Course')) {
+            return $this->belongsToMany(Course::class, 'coupon_course');
+        }
+        return $this->belongsToMany('App\\Models\\Course', 'coupon_course'); // fallback, or return null
+    }
 
     protected $fillable = [
         'code',

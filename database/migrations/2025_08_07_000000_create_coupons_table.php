@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->enum('type', ['fixed', 'percentage', 'free_shipping']);
+            $table->enum('type', ['fixed', 'percentage']);
             $table->decimal('amount', 10, 2);
             $table->decimal('min_cart_value', 10, 2)->nullable();
             $table->integer('max_uses')->nullable();

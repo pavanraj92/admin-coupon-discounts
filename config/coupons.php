@@ -9,6 +9,5 @@ return [
     'types' => [
         'fixed' => 'Fixed',
         'percentage' => 'Percentage',
-        'free_shipping' => 'Free Shipping',
     ],
 ];

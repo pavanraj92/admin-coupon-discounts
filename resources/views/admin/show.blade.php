@@ -89,6 +89,51 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold">Categories:</label>
+                                                @if($coupon->categories->count())
+                                                <p>
+                                                    @foreach($coupon->categories as $category)
+                                                    <span class="badge badge-primary">{{ $category->title }}</span>
+                                                    @endforeach
+                                                </p>
+                                                @else
+                                                <p>N/A</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold">Products:</label>
+                                                @if($coupon->products->count())
+                                                <p>
+                                                    @foreach($coupon->products as $product)
+                                                    <span class="badge badge-success">{{ $product->name }}</span>
+                                                    @endforeach
+                                                </p>
+                                                @else
+                                                <p>N/A</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold">Courses:</label>
+                                                @if($coupon->courses->count())
+                                                <p>
+                                                    @foreach($coupon->courses as $course)
+                                                    <span class="badge badge-info">{{ $course->title }}</span>
+                                                    @endforeach
+                                                </p>
+                                                @else
+                                                <p>N/A</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

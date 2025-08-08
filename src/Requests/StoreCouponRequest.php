@@ -15,7 +15,7 @@ class StoreCouponRequest extends FormRequest
     {
         return [
             'code' => 'required|string|max:50|unique:coupons,code',
-            'type' => 'required|in:fixed,percentage,free_shipping',
+            'type' => 'required|in:fixed,percentage',
             'amount' => 'required|numeric|min:0',
             'min_cart_value' => 'nullable|numeric|min:0',
             'max_uses' => 'nullable|integer|min:1',

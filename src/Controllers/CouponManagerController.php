@@ -2,11 +2,14 @@
 
 namespace Admin\Coupons\Controllers;
 
+use admin\categories\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Admin\Coupons\Models\Coupon;
 use Admin\Coupons\Requests\StoreCouponRequest;
 use Admin\Coupons\Requests\UpdateCouponRequest;
+use admin\courses\Models\Course;
+use admin\products\Models\Product;
 
 class CouponManagerController extends Controller
 {
@@ -39,7 +42,17 @@ class CouponManagerController extends Controller
     {
         try {
             $types = config('coupons.types', []);
-            return view('coupons::admin.createOrEdit', compact('types'));
+            $categories = [];
+            $products = [];
+            $courses = [];
+            if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
+                $categories = Category::where('status', 1)->get();
+                $products = Product::where('status', 1)->get();
+            }
+            if (class_exists('admin\\courses\\Models\\Course')) {
+                $courses = Course::where('status', 1)->get();
+            }
+            return view('coupons::admin.createOrEdit', compact('types', 'categories', 'products', 'courses'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupon creation form: ' . $e->getMessage());
         }
@@ -49,6 +62,10 @@ class CouponManagerController extends Controller
     {
         try {
             $coupon = Coupon::create($request->validated());
+            // Sync categories, products, courses
+            $coupon->categories()->sync($request->input('categories', []));
+            $coupon->products()->sync($request->input('products', []));
+            $coupon->courses()->sync($request->input('courses', []));
             return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create coupon: ' . $e->getMessage());
@@ -68,7 +85,23 @@ class CouponManagerController extends Controller
     {
         try {
             $types = config('coupons.types', []);
-            return view('coupons::admin.createOrEdit', compact('coupon', 'types'));
+            $categories = [];
+            $products = [];
+            $courses = [];
+            $selectedCategories = [];
+            $selectedProducts = [];
+            $selectedCourses = [];
+            if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
+                $categories = Category::where('status', 1)->get();
+                $products = Product::where('status', 1)->get();
+                $selectedCategories = $coupon->categories->pluck('id')->toArray();
+                $selectedProducts = $coupon->products->pluck('id')->toArray();
+            }
+            if (class_exists('admin\\courses\\Models\\Course')) {
+                $courses = Course::where('status', 1)->get();
+                $selectedCourses = $coupon->courses->pluck('id')->toArray();
+            }
+            return view('coupons::admin.createOrEdit', compact('coupon', 'types', 'categories', 'products', 'courses', 'selectedCategories', 'selectedProducts', 'selectedCourses'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load coupon for editing: ' . $e->getMessage());
         }
@@ -79,6 +112,10 @@ class CouponManagerController extends Controller
         try {
             $data = $request->validated();
             $coupon->update($data);
+            // Sync categories, products, courses
+            $coupon->categories()->sync($request->input('categories', []));
+            $coupon->products()->sync($request->input('products', []));
+            $coupon->courses()->sync($request->input('courses', []));
             return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update coupon: ' . $e->getMessage());

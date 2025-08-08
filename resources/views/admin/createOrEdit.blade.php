@@ -1,7 +1,3 @@
-@push('styles')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-@endpush
-
 @extends('admin::admin.layouts.master')
 
 @section('title', 'Coupons Management')
@@ -22,7 +18,7 @@
         @endif
 
         <div class="row">
-            <div class="col-12">
+            <div class="col-8">
                 <!-- card section -->
                 <div class="card bg-white">
                     <!--card header section -->
@@ -52,7 +48,6 @@
                                         <option value="">Select type</option>
                                         <option value="fixed" {{ old('type', $coupon->type ?? '') == 'fixed' ? 'selected' : '' }}>Fixed</option>
                                         <option value="percentage" {{ old('type', $coupon->type ?? '') == 'percentage' ? 'selected' : '' }}>Percentage</option>
-                                        <option value="free_shipping" {{ old('type', $coupon->type ?? '') == 'free_shipping' ? 'selected' : '' }}>Free Shipping</option>
                                     </select>
                                     @error('type')
                                     <div class="text-danger validation-error">{{ $message }}</div>
@@ -158,6 +153,43 @@
                     </div>
                 </div>
             </div>
+            <div class="col-4">
+                <div class="card bg-white">
+                    <div class="card-header bg-white border-bottom border-gray-200">
+                        <h4 class="card-title">Coupon Applicability</h4>
+                    </div>
+                    <div class="card-body">
+                        @if(class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category'))
+                        <div class="form-group">
+                            <label for="categories">Categories</label>
+                            <select name="categories[]" id="categories" multiple class="form-control select2">
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ (isset($selectedCategories) && in_array($category->id, $selectedCategories)) || (isset($coupon) && $coupon->categories->contains($category->id)) ? 'selected' : '' }}>{{ $category->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="products">Products</label>
+                            <select name="products[]" id="products" multiple class="form-control select2">
+                                @foreach($products as $product)
+                                <option value="{{ $product->id }}" {{ (isset($selectedProducts) && in_array($product->id, $selectedProducts)) || (isset($coupon) && $coupon->products->contains($product->id)) ? 'selected' : '' }}>{{ $product->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                        @if(class_exists('admin\\courses\\Models\\Course'))
+                        <div class="form-group">
+                            <label for="courses">Courses</label>
+                            <select name="courses[]" id="courses" multiple class="form-control select2">
+                                @foreach($courses as $course)
+                                <option value="{{ $course->id }}" {{ (isset($selectedCourses) && in_array($course->id, $selectedCourses)) || (isset($coupon) && $coupon->courses->contains($course->id)) ? 'selected' : '' }}>{{ $course->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
             <!-- end col -->
         </div>
         <!-- end row -->
@@ -168,12 +200,22 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
     $(document).ready(function() {
+        ['#courses', '#products', '#categories'].forEach(function(selector) {
+            $(selector).select2({
+                placeholder: "Select " + selector.replace('#', ''),
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
         try {
             if (typeof $.fn.select2 !== 'undefined') {
                 $('.select2').select2();
@@ -197,13 +239,18 @@
                     });
             }, 1);
         }
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var dd = String(today.getDate()).padStart(2, '0');
+        var minDate = yyyy + '-' + mm + '-' + dd;
         $('#start_date, #end_date').datepicker({
             dateFormat: 'yy-mm-dd',
             changeMonth: true,
             changeYear: true,
             showButtonPanel: true,
             autoclose: true,
-            minDate: null,
+            minDate: minDate,
             beforeShow: customizeDatepickerButtons,
             onChangeMonthYear: function(year, month, inst) {
                 var input = inst.input ? inst.input[0] : null;
