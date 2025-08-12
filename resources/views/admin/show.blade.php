@@ -169,8 +169,12 @@
                                         </a>
                                         @endadmincan
                                         @admincan('product_coupons_manager_delete')
-                                        <button type="button" class="btn btn-danger delete-btn"
-                                            data-url="{{ route('admin.coupons.destroy', $coupon) }}" data-text="Are you sure you want to delete this record?" data-method="DELETE">
+                                        <button type="button" class="btn btn-danger delete-btn delete-record"
+                                            title="Delete this record"
+                                            data-url="{{ route('admin.coupons.destroy', $coupon) }}"
+                                            data-redirect="{{ route('admin.coupons.index') }}"
+                                            data-text="Are you sure you want to delete this record?"
+                                            data-method="DELETE">
                                             <i class="mdi mdi-delete"></i> Delete Coupon
                                         </button>
                                         @endadmincan
@@ -185,62 +189,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        // Delete functionality
-        $(document).on('click', '.delete-btn', function(e) {
-            e.preventDefault();
-            var currentElement = $(this);
-            var id = $(this).data('id');
-            var url = $(this).data('url');
-            var method = $(this).data('method') || 'POST'; // Default to POST if method is not specified
-            var text = $(this).data('text') || "You won't be able to revert this!"; // Default text if not specified
-
-            Swal.fire({
-                text: text,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel!",
-                customClass: {
-                    confirmButton: "btn btn-outline-danger",
-                    cancelButton: "btn btn-outline-success",
-                },
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: method,
-                        url: url,
-                        data: {
-                            id: id
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                currentElement.closest("tr").remove();
-                                toastr.success(response.message);
-                                setTimeout(function() {
-                                    window.location.href = "{{ route('admin.coupons.index') }}";
-                                }, 1000);
-                            } else {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error deleting record:", error);
-                            console.error("Status:", status);
-                            console.error("Response:", xhr.responseText);
-                            toastr.error(
-                                "An error occurred while deleting the record. please try again."
-                            );
-                        },
-                    });
-                }
-            });
-        });
-    });
-</script>
-@endpush
