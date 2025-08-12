@@ -163,12 +163,14 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex flex-column">
+                                        @admincan('product_coupons_manager_edit')
                                         <a href="{{ route('admin.coupons.edit', $coupon) }}" class="btn btn-warning mb-2">
                                             <i class="mdi mdi-pencil"></i> Edit Coupon
                                         </a>
+                                        @endadmincan
                                         @admincan('product_coupons_manager_delete')
                                         <button type="button" class="btn btn-danger delete-btn"
-                                            data-url="{{ route('admin.coupons.destroy', $coupon) }}">
+                                            data-url="{{ route('admin.coupons.destroy', $coupon) }}" data-text="Are you sure you want to delete this record?" data-method="DELETE">
                                             <i class="mdi mdi-delete"></i> Delete Coupon
                                         </button>
                                         @endadmincan
@@ -187,41 +189,54 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Delete functionality with SweetAlert
-        $('.delete-btn').on('click', function(e) {
+        // Delete functionality
+        $(document).on('click', '.delete-btn', function(e) {
             e.preventDefault();
-
-            let url = $(this).data('url');
+            var currentElement = $(this);
+            var id = $(this).data('id');
+            var url = $(this).data('url');
+            var method = $(this).data('method') || 'POST'; // Default to POST if method is not specified
+            var text = $(this).data('text') || "You won't be able to revert this!"; // Default text if not specified
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to delete this coupon? This action cannot be undone.',
-                icon: 'warning',
+                text: text,
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel!",
+                customClass: {
+                    confirmButton: "btn btn-outline-danger",
+                    cancelButton: "btn btn-outline-success",
+                },
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
+                        type: method,
                         url: url,
-                        type: 'DELETE',
                         data: {
-                            _token: '{{ csrf_token() }}'
+                            id: id
                         },
                         success: function(response) {
                             if (response.success) {
-                                Swal.fire('Deleted!', response.message, 'success').then(() => {
-                                    window.location.href = '{{ route("admin.coupons.index") }}';
-                                });
+                                currentElement.closest("tr").remove();
+                                toastr.success(response.message);
+                                setTimeout(function() {
+                                    window.location.href = "{{ route('admin.coupons.index') }}";
+                                }, 1000);
                             } else {
-                                Swal.fire('Error!', response.message, 'error');
+                                toastr.error(response.message);
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'Something went wrong!', 'error');
-                        }
+                        error: function(xhr, status, error) {
+                            console.error("Error deleting record:", error);
+                            console.error("Status:", status);
+                            console.error("Response:", xhr.responseText);
+                            toastr.error(
+                                "An error occurred while deleting the record. please try again."
+                            );
+                        },
                     });
                 }
             });
