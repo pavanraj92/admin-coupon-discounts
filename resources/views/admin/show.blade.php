@@ -3,8 +3,8 @@
 @section('title', 'View Coupon - ' . $coupon->code)
 @section('page-title', 'Coupon Details')
 @section('breadcrumb')
-<li class="breadcrumb-item"><a href="{{ route('admin.coupons.index') }}">Coupons</a></li>
-<li class="breadcrumb-item active" aria-current="page">{{ $coupon->code }}</li>
+<li class="breadcrumb-item"><a href="{{ route('admin.coupons.index') }}">Coupon Manager</a></li>
+<li class="breadcrumb-item active" aria-current="page">Coupon Details</li>
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
                         <h4 class="card-title mb-0">{{ $coupon->code }} - {{ ucfirst($coupon->type) }}</h4>
                         <div>
                             <a href="{{ route('admin.coupons.index') }}" class="btn btn-secondary ml-2">
-                                <i class="mdi mdi-arrow-left"></i> Back to List
+                                Back
                             </a>
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                                 </div>
                             </div>
 
-                            <div class="card h-100">
+                            <div class="card">
                                 <div class="card-header bg-primary">
                                     <h5 class="mb-0 text-white font-bold">Quick Actions</h5>
                                 </div>

@@ -17,25 +17,43 @@ class Coupon extends Model
     public function categories()
     {
         if (class_exists('admin\\categories\\Models\\Category')) {
-            return $this->belongsToMany(Category::class, 'coupon_category');
+            return $this->belongsToMany(Category::class, 'coupon_category', 'coupon_id', 'category_id')
+                ->using('App\Pivots\SoftDeletingPivot')
+                ->withTimestamps()
+                ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Category', 'coupon_category'); // fallback, or return null
+        return $this->belongsToMany('App\\Models\\Category', 'coupon_category', 'coupon_id', 'category_id')
+            ->using('App\Pivots\SoftDeletingPivot')
+            ->withTimestamps()
+            ->withPivot('deleted_at');
     }
 
     public function products()
     {
         if (class_exists('admin\\products\\Models\\Product')) {
-            return $this->belongsToMany(Product::class, 'coupon_product');
+            return $this->belongsToMany(Product::class, 'coupon_product', 'coupon_id', 'product_id')
+                ->using('App\Pivots\SoftDeletingPivot')
+                ->withTimestamps()
+                ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Product', 'coupon_product'); // fallback, or return null
+        return $this->belongsToMany('App\\Models\\Product', 'coupon_product', 'coupon_id', 'product_id')
+            ->using('App\Pivots\SoftDeletingPivot')
+            ->withTimestamps()
+            ->withPivot('deleted_at');
     }
 
     public function courses()
     {
         if (class_exists('admin\\courses\\Models\\Course')) {
-            return $this->belongsToMany(Course::class, 'coupon_course');
+            return $this->belongsToMany(Course::class, 'coupon_course', 'coupon_id', 'course_id')
+                ->using('App\\Pivots\\SoftDeletingPivot')
+                ->withTimestamps()
+                ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Course', 'coupon_course'); // fallback, or return null
+        return $this->belongsToMany('App\\Models\\Course', 'coupon_course', 'coupon_id', 'course_id')
+            ->using('App\\Pivots\\SoftDeletingPivot')
+            ->withTimestamps()
+            ->withPivot('deleted_at');
     }
 
     protected $fillable = [

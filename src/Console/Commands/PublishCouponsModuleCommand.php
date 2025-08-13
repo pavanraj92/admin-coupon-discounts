@@ -1,6 +1,6 @@
 <?php
 
-namespace admin\coupons\Console\Commands;
+namespace Admin\Coupons\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -48,8 +48,8 @@ class PublishCouponsModuleCommand extends Command
             $basePath . '/Models/Coupon.php' => base_path('Modules/Coupons/app/Models/Coupon.php'),
 
             // Requests
-            $basePath . '/Requests/CouponCreateRequest.php' => base_path('Modules/Coupons/app/Http/Requests/CouponCreateRequest.php'),
-            $basePath . '/Requests/CouponUpdateRequest.php' => base_path('Modules/Coupons/app/Http/Requests/CouponUpdateRequest.php'),
+            $basePath . '/Requests/StoreCouponRequest.php' => base_path('Modules/Coupons/app/Http/Requests/StoreCouponRequest.php'),
+            $basePath . '/Requests/UpdateCouponRequest.php' => base_path('Modules/Coupons/app/Http/Requests/UpdateCouponRequest.php'),
 
             // Routes
             $basePath . '/routes/web.php' => base_path('Modules/Coupons/routes/web.php'),
@@ -96,8 +96,8 @@ class PublishCouponsModuleCommand extends Command
         // Handle specific file types
         if (str_contains($sourceFile, 'Controllers')) {
             $content = str_replace('use admin\\coupons\\Models\\Coupon;', 'use Modules\\Coupons\\app\\Models\\Coupon;', $content);
-            $content = str_replace('use admin\\coupons\\Requests\\CouponCreateRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\CouponCreateRequest;', $content);
-            $content = str_replace('use admin\\coupons\\Requests\\CouponUpdateRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\CouponUpdateRequest;', $content);
+            $content = str_replace('use admin\\coupons\\Requests\\StoreCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\StoreCouponRequest;', $content);
+            $content = str_replace('use admin\\coupons\\Requests\\UpdateCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\UpdateCouponRequest;', $content);
         }
 
         return $content;

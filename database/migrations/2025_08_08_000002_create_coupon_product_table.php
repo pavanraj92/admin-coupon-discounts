@@ -10,6 +10,7 @@ return new class extends Migration {
             $table->foreignId('coupon_id')->constrained('coupons')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
     public function down() {

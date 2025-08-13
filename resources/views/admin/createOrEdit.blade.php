@@ -143,11 +143,10 @@
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary" id="saveBtn">
-                                <i class="mdi mdi-content-save"></i>
-                                {{ isset($coupon) ? 'Update Coupon' : 'Save Coupon' }}
+                                {{ isset($coupon) ? 'Update' : 'Save' }}
                             </button>
                             <a href="{{ route('admin.coupons.index') }}" class="btn btn-secondary">
-                                <i class="mdi mdi-arrow-left"></i> Back
+                                Back
                             </a>
                         </div>
                     </div>

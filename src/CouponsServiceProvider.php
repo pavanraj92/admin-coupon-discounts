@@ -14,12 +14,12 @@ class CouponsServiceProvider extends ServiceProvider
     {
         // Load views from published module, resource path, and package fallback
         $this->loadViewsFrom([
-            base_path('Modules/Coupons/resources/views'),
-            resource_path('views/admin/coupon'),
+            base_path('Modules/Coupons/resources/views'), // Published module views first
+            resource_path('views/admin/coupon'), // Published views second
             __DIR__ . '/../resources/views'
         ], 'coupons');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/coupons.php', 'coupons.config');
+        $this->mergeConfigFrom(__DIR__ . '/../config/coupons.php', 'coupons.constants');
 
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Coupons/resources/views'))) {
@@ -38,7 +38,7 @@ class CouponsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/' => base_path('Modules/Coupons/config/'),
             __DIR__ . '/../database/migrations' => base_path('Modules/Coupons/database/migrations'),
-            __DIR__ . '/../resources/views/admin' => base_path('Modules/Coupons/resources/views/'),
+            __DIR__ . '/../resources/views' => base_path('Modules/Coupons/resources/views/'),
         ], 'coupons');
 
         $this->registerAdminRoutes();
@@ -94,6 +94,9 @@ class CouponsServiceProvider extends ServiceProvider
             __DIR__ . '/../src/Requests/StoreCouponRequest.php' => base_path('Modules/Coupons/app/Http/Requests/StoreCouponRequest.php'),
             __DIR__ . '/../src/Requests/UpdateCouponRequest.php' => base_path('Modules/Coupons/app/Http/Requests/UpdateCouponRequest.php'),
 
+            // Pivots
+            __DIR__ . '/../src/Pivots/SoftDeletingPivot.php' => base_path('Modules/Coupons/app/Pivots/SoftDeletingPivot.php'),
+
             // Routes
             __DIR__ . '/routes/web.php' => base_path('Modules/Coupons/routes/web.php'),
         ];
@@ -125,9 +128,11 @@ class CouponsServiceProvider extends ServiceProvider
             'namespace Admin\\Coupons\\Controllers;' => 'namespace Modules\\Coupons\\app\\Http\\Controllers\\Admin;',
             'namespace Admin\\Coupons\\Models;' => 'namespace Modules\\Coupons\\app\\Models;',
             'namespace Admin\\Coupons\\Requests;' => 'namespace Modules\\Coupons\\app\\Http\\Requests;',
+            'namespace Admin\\Coupons\\Pivots;' => 'namespace Modules\\Coupons\\app\\Pivots;',
             'use Admin\\Coupons\\Controllers\\' => 'use Modules\\Coupons\\app\\Http\\Controllers\\Admin\\',
             'use Admin\\Coupons\\Models\\' => 'use Modules\\Coupons\\app\\Models\\',
             'use Admin\\Coupons\\Requests\\' => 'use Modules\\Coupons\\app\\Http\\Requests\\',
+            'use Admin\\Coupons\\Pivots\\' => 'use Modules\\Coupons\\app\\Pivots\\',
             'Admin\\Coupons\\Controllers\\CouponManagerController' => 'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
         ];
 
@@ -143,6 +148,8 @@ class CouponsServiceProvider extends ServiceProvider
             $content = $this->transformModelNamespaces($content);
         } elseif (str_contains($sourceFile, 'Requests')) {
             $content = $this->transformRequestNamespaces($content);
+        } elseif (str_contains($sourceFile, 'Pivots')) {
+            $content = $this->transformPivotNamespaces($content);
         } elseif (str_contains($sourceFile, 'routes')) {
             $content = $this->transformRouteNamespaces($content);
         }
@@ -189,6 +196,12 @@ class CouponsServiceProvider extends ServiceProvider
     protected function transformRequestNamespaces($content)
     {
         // Any request-specific transformations
+        return $content;
+    }
+
+    protected function transformPivotNamespaces($content)
+    {
+        // Any pivot-specific transformations if needed
         return $content;
     }
 

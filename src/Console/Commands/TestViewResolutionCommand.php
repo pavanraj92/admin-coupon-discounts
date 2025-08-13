@@ -1,6 +1,6 @@
 <?php
 
-namespace admin\coupons\Console\Commands;
+namespace Admin\Coupons\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\View;

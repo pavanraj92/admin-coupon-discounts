@@ -1,9 +1,9 @@
 @extends('admin::admin.layouts.master')
 
 @section('title', 'Coupons Management')
-@section('page-title', 'Manage Coupons')
+@section('page-title', 'Coupon Manager')
 @section('breadcrumb')
-<li class="breadcrumb-item active" aria-current="page">Manage Coupons</li>
+<li class="breadcrumb-item active" aria-current="page">Coupon Manager</li>
 @endsection
 
 @section('content')
@@ -48,7 +48,7 @@
                     @admincan('coupons_manager_create')
                     <div class="text-right">
                         <a href="{{ route('admin.coupons.create') }}" class="btn btn-primary mb-3">
-                            <i class="mdi mdi-plus"></i> Create New Coupon
+                            Create New Coupon
                         </a>
                     </div>
                     @endadmincan
