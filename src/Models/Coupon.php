@@ -2,9 +2,6 @@
 
 namespace Admin\Coupons\Models;
 
-use admin\categories\Models\Category;
-use admin\courses\Models\Course;
-use admin\products\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
@@ -16,44 +13,32 @@ class Coupon extends Model
 
     public function categories()
     {
-        if (class_exists('admin\\categories\\Models\\Category')) {
-            return $this->belongsToMany(Category::class, 'coupon_category', 'coupon_id', 'category_id')
+        if (class_exists(\admin\categories\Models\Category::class)) {
+            return $this->belongsToMany(\admin\categories\Models\Category::class, 'coupon_category', 'coupon_id', 'category_id')
                 ->using('App\Pivots\SoftDeletingPivot')
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Category', 'coupon_category', 'coupon_id', 'category_id')
-            ->using('App\Pivots\SoftDeletingPivot')
-            ->withTimestamps()
-            ->withPivot('deleted_at');
     }
 
     public function products()
     {
-        if (class_exists('admin\\products\\Models\\Product')) {
-            return $this->belongsToMany(Product::class, 'coupon_product', 'coupon_id', 'product_id')
+        if (class_exists(\admin\products\Models\Product::class)) {
+            return $this->belongsToMany(\admin\products\Models\Product::class, 'coupon_product', 'coupon_id', 'product_id')
                 ->using('App\Pivots\SoftDeletingPivot')
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Product', 'coupon_product', 'coupon_id', 'product_id')
-            ->using('App\Pivots\SoftDeletingPivot')
-            ->withTimestamps()
-            ->withPivot('deleted_at');
     }
 
     public function courses()
     {
-        if (class_exists('admin\\courses\\Models\\Course')) {
-            return $this->belongsToMany(Course::class, 'coupon_course', 'coupon_id', 'course_id')
+        if (class_exists(\admin\courses\Models\Course::class)) {
+            return $this->belongsToMany(\admin\courses\Models\Course::class, 'coupon_course', 'coupon_id', 'course_id')
                 ->using('App\\Pivots\\SoftDeletingPivot')
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }
-        return $this->belongsToMany('App\\Models\\Course', 'coupon_course', 'coupon_id', 'course_id')
-            ->using('App\\Pivots\\SoftDeletingPivot')
-            ->withTimestamps()
-            ->withPivot('deleted_at');
     }
 
     protected $fillable = [

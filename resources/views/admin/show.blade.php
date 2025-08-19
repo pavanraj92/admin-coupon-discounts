@@ -105,6 +105,7 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @if (class_exists(\admin\products\Models\Product::class))
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Products:</label>
@@ -119,6 +120,9 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @endif
+
+                                        @if (class_exists(\admin\courses\Models\Course::class))
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Courses:</label>
@@ -133,6 +137,7 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

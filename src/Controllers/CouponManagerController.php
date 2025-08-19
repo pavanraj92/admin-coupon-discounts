@@ -63,9 +63,15 @@ class CouponManagerController extends Controller
         try {
             $coupon = Coupon::create($request->validated());
             // Sync categories, products, courses
-            $coupon->categories()->sync($request->input('categories', []));
-            $coupon->products()->sync($request->input('products', []));
-            $coupon->courses()->sync($request->input('courses', []));
+            if ($request->has('categories')) {
+                $coupon->categories()->sync($request->input('categories', []));
+            }
+            if ($request->has('products')) {
+                $coupon->products()->sync($request->input('products', []));
+            }
+            if ($request->has('courses')) {
+                $coupon->courses()->sync($request->input('courses', []));
+            }
             return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create coupon: ' . $e->getMessage());
@@ -113,9 +119,15 @@ class CouponManagerController extends Controller
             $data = $request->validated();
             $coupon->update($data);
             // Sync categories, products, courses
-            $coupon->categories()->sync($request->input('categories', []));
-            $coupon->products()->sync($request->input('products', []));
-            $coupon->courses()->sync($request->input('courses', []));
+            if ($request->has('categories')) {
+                $coupon->categories()->sync($request->input('categories', []));
+            }
+            if ($request->has('products')) {
+                $coupon->products()->sync($request->input('products', []));
+            }
+            if ($request->has('courses')) {
+                $coupon->courses()->sync($request->input('courses', []));
+            }
             return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update coupon: ' . $e->getMessage());
@@ -139,8 +151,6 @@ class CouponManagerController extends Controller
     {
         try {
             $coupon = Coupon::findOrFail($request->id);
-
-            // Ensure status is cast to integer (0 or 1)
             $coupon->status = (int) $request->status;
             $coupon->save();
 
