@@ -46,11 +46,11 @@ class CouponManagerController extends Controller
             $products = [];
             $courses = [];
             if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
-                $categories = Category::where('status', 1)->get();
-                $products = Product::where('status', 1)->get();
+                $categories = Category::get();
+                $products = Product::get();
             }
             if (class_exists('admin\\courses\\Models\\Course')) {
-                $courses = Course::where('status', 1)->get();
+                $courses = Course::get();
             }
             return view('coupons::admin.createOrEdit', compact('types', 'categories', 'products', 'courses'));
         } catch (\Exception $e) {
@@ -98,13 +98,13 @@ class CouponManagerController extends Controller
             $selectedProducts = [];
             $selectedCourses = [];
             if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
-                $categories = Category::where('status', 1)->get();
-                $products = Product::where('status', 1)->get();
+                $categories = Category::get();
+                $products = Product::get();
                 $selectedCategories = $coupon->categories->pluck('id')->toArray();
                 $selectedProducts = $coupon->products->pluck('id')->toArray();
             }
             if (class_exists('admin\\courses\\Models\\Course')) {
-                $courses = Course::where('status', 1)->get();
+                $courses = Course::get();
                 $selectedCourses = $coupon->courses->pluck('id')->toArray();
             }
             return view('coupons::admin.createOrEdit', compact('coupon', 'types', 'categories', 'products', 'courses', 'selectedCategories', 'selectedProducts', 'selectedCourses'));

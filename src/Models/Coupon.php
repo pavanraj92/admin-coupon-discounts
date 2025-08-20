@@ -15,7 +15,7 @@ class Coupon extends Model
     {
         if (class_exists(\admin\categories\Models\Category::class)) {
             return $this->belongsToMany(\admin\categories\Models\Category::class, 'coupon_category', 'coupon_id', 'category_id')
-                ->using('App\Pivots\SoftDeletingPivot')
+                ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }
@@ -25,7 +25,7 @@ class Coupon extends Model
     {
         if (class_exists(\admin\products\Models\Product::class)) {
             return $this->belongsToMany(\admin\products\Models\Product::class, 'coupon_product', 'coupon_id', 'product_id')
-                ->using('App\Pivots\SoftDeletingPivot')
+                ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }
@@ -35,7 +35,7 @@ class Coupon extends Model
     {
         if (class_exists(\admin\courses\Models\Course::class)) {
             return $this->belongsToMany(\admin\courses\Models\Course::class, 'coupon_course', 'coupon_id', 'course_id')
-                ->using('App\\Pivots\\SoftDeletingPivot')
+                ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
         }

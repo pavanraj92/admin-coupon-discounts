@@ -139,7 +139,7 @@
                         <h4 class="card-title">Coupon Applicability</h4>
                     </div>
                     <div class="card-body">
-                        @if(class_exists('\admin\products\Models\Product::class') && class_exists('\admin\categories\Models\Category::class'))
+                        @if(class_exists(\admin\products\Models\Product::class) && class_exists(\admin\categories\Models\Category::class))
                         <div class="form-group">
                             <label for="categories">Categories</label>
                             <select name="categories[]" id="categories" multiple class="form-control select2">
