@@ -10,7 +10,14 @@ return new class extends Migration {
         Schema::create('coupon_category', function (Blueprint $table) {
             $table->id();
             $table->foreignId('coupon_id')->constrained('coupons')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id')->nullable();
+
+            if (Schema::hasTable('categories')) {
+                $table->foreignId('category_id')->nullable()
+                      ->constrained('categories')
+                      ->cascadeOnDelete();
+            } else {
+                $table->unsignedBigInteger('category_id')->nullable();
+            }
 
             $table->timestamps();
             $table->softDeletes();
