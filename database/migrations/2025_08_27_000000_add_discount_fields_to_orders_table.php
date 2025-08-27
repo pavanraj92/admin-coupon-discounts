@@ -21,7 +21,12 @@ return new class extends Migration
         }
         if ($industry === 'ecommerce') {
             Schema::table('orders', function (Blueprint $table) {
-                $table->foreignId('coupon_id')->nullable()->constrained('coupons')->after('id')->onDelete('cascade');
+                $table->foreignId('coupon_id')->nullable()->constrained('coupons')->after('id');
+                $table->decimal('discount_value', 10, 2)->nullable()->after('coupon_id');
+            });
+        }elseif($industry === 'education'){
+            Schema::table('course_purchases', function (Blueprint $table) {
+                $table->foreignId('coupon_id')->nullable()->constrained('coupons')->after('id');
                 $table->decimal('discount_value', 10, 2)->nullable()->after('coupon_id');
             });
         }
@@ -41,6 +46,12 @@ return new class extends Migration
 
         if ($industry === 'ecommerce') {
             Schema::table('orders', function (Blueprint $table) {
+                // Drop foreign key first if applied
+                // $table->dropForeign(['commission_id']);
+                $table->dropColumn(['coupon_id', 'discount_value']);
+            });
+        }elseif($industry === 'education'){
+            Schema::table('course_purchases', function (Blueprint $table) {
                 // Drop foreign key first if applied
                 // $table->dropForeign(['commission_id']);
                 $table->dropColumn(['coupon_id', 'discount_value']);
