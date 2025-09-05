@@ -19,7 +19,13 @@ class CouponsServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views'
         ], 'coupons');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/coupons.php', 'coupons.constants');
+        // Load published module config first (if it exists), then fallback to package config
+        if (file_exists(base_path('Modules/Coupons/config/coupons.php'))) {
+            $this->mergeConfigFrom(base_path('Modules/Coupons/config/coupons.php'), 'coupons.config');
+        } else {
+            // Fallback to package config if published config doesn't exist
+            $this->mergeConfigFrom(__DIR__ . '/../config/coupons.php', 'coupons.config');
+        }
 
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Coupons/resources/views'))) {
@@ -28,11 +34,6 @@ class CouponsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         if (is_dir(base_path('Modules/Coupons/database/migrations'))) {
             $this->loadMigrationsFrom(base_path('Modules/Coupons/database/migrations'));
-        }
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/coupons.php', 'coupons.config');
-        if (file_exists(base_path('Modules/Coupons/config/coupons.php'))) {
-            $this->mergeConfigFrom(base_path('Modules/Coupons/config/coupons.php'), 'coupons.config');
         }
 
         $this->publishes([
