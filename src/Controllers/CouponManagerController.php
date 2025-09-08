@@ -2,14 +2,12 @@
 
 namespace Admin\Coupons\Controllers;
 
-use admin\categories\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Admin\Coupons\Models\Coupon;
 use Admin\Coupons\Requests\StoreCouponRequest;
 use Admin\Coupons\Requests\UpdateCouponRequest;
-use admin\courses\Models\Course;
-use admin\products\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class CouponManagerController extends Controller
 {
@@ -45,12 +43,12 @@ class CouponManagerController extends Controller
             $categories = [];
             $products = [];
             $courses = [];
-            if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
-                $categories = Category::get();
-                $products = Product::get();
+            if (class_exists(\admin\products\Models\Product::class) && class_exists(\admin\categories\Models\Category::class)) {
+                $categories = DB::table('categories')->get();
+                $products = DB::table('products')->get();
             }
-            if (class_exists('admin\\courses\\Models\\Course')) {
-                $courses = Course::get();
+            if (class_exists(\admin\courses\Models\Course::class)) {
+                $courses = DB::table('courses')->get();
             }
             return view('coupons::admin.createOrEdit', compact('types', 'categories', 'products', 'courses'));
         } catch (\Exception $e) {
@@ -97,14 +95,14 @@ class CouponManagerController extends Controller
             $selectedCategories = [];
             $selectedProducts = [];
             $selectedCourses = [];
-            if (class_exists('admin\\products\\Models\\Product') && class_exists('admin\\categories\\Models\\Category')) {
-                $categories = Category::get();
-                $products = Product::get();
+            if (class_exists(\admin\products\Models\Product::class) && class_exists(\admin\categories\Models\Category::class)) {
+                $categories = DB::table('categories')->get();
+                $products = DB::table('products')->get();
                 $selectedCategories = $coupon->categories->pluck('id')->toArray();
                 $selectedProducts = $coupon->products->pluck('id')->toArray();
             }
-            if (class_exists('admin\\courses\\Models\\Course')) {
-                $courses = Course::get();
+            if (class_exists(\admin\courses\Models\Course::class)) {
+                $courses = DB::table('courses')->get();
                 $selectedCourses = $coupon->courses->pluck('id')->toArray();
             }
             return view('coupons::admin.createOrEdit', compact('coupon', 'types', 'categories', 'products', 'courses', 'selectedCategories', 'selectedProducts', 'selectedCourses'));
