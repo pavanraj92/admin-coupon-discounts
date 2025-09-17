@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Kyslik\ColumnSortable\Sortable;
+use admin\categories\Models\Category;
+use admin\products\Models\Product;
+use admin\courses\Models\Course;
+use Illuminate\Support\Facades\DB;
 
 class Coupon extends Model
 {
@@ -13,8 +17,8 @@ class Coupon extends Model
 
     public function categories()
     {
-        if (class_exists(\admin\categories\Models\Category::class)) {
-            return $this->belongsToMany(\admin\categories\Models\Category::class, 'coupon_category', 'coupon_id', 'category_id')
+        if (self::isModuleInstalled('categories')) {
+            return $this->belongsToMany(Category::class, 'coupon_category', 'coupon_id', 'category_id')
                 ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
@@ -23,8 +27,8 @@ class Coupon extends Model
 
     public function products()
     {
-        if (class_exists(\admin\products\Models\Product::class)) {
-            return $this->belongsToMany(\admin\products\Models\Product::class, 'coupon_product', 'coupon_id', 'product_id')
+        if (self::isModuleInstalled('products')) {
+            return $this->belongsToMany(Product::class, 'coupon_product', 'coupon_id', 'product_id')
                 ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
@@ -33,8 +37,8 @@ class Coupon extends Model
 
     public function courses()
     {
-        if (class_exists(\admin\courses\Models\Course::class)) {
-            return $this->belongsToMany(\admin\courses\Models\Course::class, 'coupon_course', 'coupon_id', 'course_id')
+        if (self::isModuleInstalled('courses')) {
+            return $this->belongsToMany(Course::class, 'coupon_course', 'coupon_id', 'course_id')
                 ->using(\Admin\Coupons\Pivots\SoftDeletingPivot::class)
                 ->withTimestamps()
                 ->withPivot('deleted_at');
@@ -97,5 +101,13 @@ class Coupon extends Model
         return Config::has('get.admin_page_limit')
             ? Config::get('get.admin_page_limit')
             : 10;
+    }
+
+    public static function isModuleInstalled($moduleName)
+    {
+        return DB::table('packages')
+            ->where('name', $moduleName)
+            ->where('is_installed', 1)
+            ->exists();
     }
 }

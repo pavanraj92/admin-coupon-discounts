@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Coupons\Console\Commands;
+namespace admin\coupons\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -28,6 +28,8 @@ class PublishCouponsModuleCommand extends Command
             '--tag' => 'coupons',
             '--force' => $this->option('force')
         ]);
+
+        $this->transformBladeFilesNamespaces();
 
         // Update composer autoload
         $this->updateComposerAutoload();
@@ -76,16 +78,23 @@ class PublishCouponsModuleCommand extends Command
         $namespaceTransforms = [
             // Main namespace transformations
             'namespace admin\\coupons\\Controllers;' => 'namespace Modules\\Coupons\\app\\Http\\Controllers\\Admin;',
+            'namespace Admin\\Coupons\\Controllers;' => 'namespace Modules\\Coupons\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\coupons\\Models;' => 'namespace Modules\\Coupons\\app\\Models;',
+            'namespace Admin\\Coupons\\Models;' => 'namespace Modules\\Coupons\\app\\Models;',
             'namespace admin\\coupons\\Requests;' => 'namespace Modules\\Coupons\\app\\Http\\Requests;',
+            'namespace Admin\\Coupons\\Requests;' => 'namespace Modules\\Coupons\\app\\Http\\Requests;',
 
             // Use statements transformations
             'use admin\\coupons\\Controllers\\' => 'use Modules\\Coupons\\app\\Http\\Controllers\\Admin\\',
+            'use Admin\\Coupons\\Controllers\\' => 'use Modules\\Coupons\\app\\Http\\Controllers\\Admin\\',
             'use admin\\coupons\\Models\\' => 'use Modules\\Coupons\\app\\Models\\',
+            'use Admin\\Coupons\\Models\\' => 'use Modules\\Coupons\\app\\Models\\',
             'use admin\\coupons\\Requests\\' => 'use Modules\\Coupons\\app\\Http\\Requests\\',
+            'use Admin\\Coupons\\Requests\\' => 'use Modules\\Coupons\\app\\Http\\Requests\\',
 
             // Class references in routes
             'admin\\coupons\\Controllers\\CouponManagerController' => 'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
+            'Admin\\Coupons\\Controllers\\CouponManagerController' => 'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
         ];
 
         // Apply transformations
@@ -96,11 +105,87 @@ class PublishCouponsModuleCommand extends Command
         // Handle specific file types
         if (str_contains($sourceFile, 'Controllers')) {
             $content = str_replace('use admin\\coupons\\Models\\Coupon;', 'use Modules\\Coupons\\app\\Models\\Coupon;', $content);
+            $content = str_replace('use Admin\\Coupons\\Models\\Coupon;', 'use Modules\\Coupons\\app\\Models\\Coupon;', $content);
             $content = str_replace('use admin\\coupons\\Requests\\StoreCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\StoreCouponRequest;', $content);
+            $content = str_replace('use Admin\\Coupons\\Requests\\StoreCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\StoreCouponRequest;', $content);
             $content = str_replace('use admin\\coupons\\Requests\\UpdateCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\UpdateCouponRequest;', $content);
+            $content = str_replace('use Admin\\Coupons\\Requests\\UpdateCouponRequest;', 'use Modules\\Coupons\\app\\Http\\Requests\\UpdateCouponRequest;', $content);
+            $content = str_replace(
+                'use admin\\categories\\Models\\Category;',
+                'use Modules\\Categories\\app\\Models\\Category;',
+                $content
+            );
+            $content = str_replace(
+                'use admin\\products\\Models\\Product;',
+                'use Modules\\Products\\app\\Models\\Product;',
+                $content
+            );
+            $content = str_replace(
+                'use admin\\courses\\Models\\Course;',
+                'use Modules\\Courses\\app\\Models\\Course;',
+                $content
+            );
+        }elseif(str_contains($sourceFile, 'Models')){
+            $content = str_replace(
+                'use admin\\categories\\Models\\Category;',
+                'use Modules\\Categories\\app\\Models\\Category;',
+                $content
+            );
+            $content = str_replace(
+                'use admin\\products\\Models\\Product;',
+                'use Modules\\Products\\app\\Models\\Product;',
+                $content
+            );
+            $content = str_replace(
+                'use admin\\courses\\Models\\Course;',
+                'use Modules\\Courses\\app\\Models\\Course;',
+                $content
+            );
         }
 
         return $content;
+    }
+
+    protected function transformBladeFilesNamespaces()
+    {
+        $pathsToScan = [
+            base_path('Modules/Coupons/resources/views'),
+            resource_path('views/admin/coupon'),
+        ];
+
+        foreach ($pathsToScan as $path) {
+            if (File::exists($path)) {
+                $this->transformBladeNamespacesInDirectory($path);
+            }
+        }
+    }
+
+    protected function transformBladeNamespacesInDirectory($directory)
+    {
+        $files = File::allFiles($directory);
+
+        foreach ($files as $file) {
+            // Process only Blade/PHP view files
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $content = File::get($file->getRealPath());
+
+            $replacements = [
+                'admin\\coupons\\Models\\Coupon' => 'Modules\\Coupons\\app\\Models\\Coupon',
+            ];
+
+            $updated = $content;
+            foreach ($replacements as $search => $replace) {
+                $updated = str_replace($search, $replace, $updated);
+            }
+
+            if ($updated !== $content) {
+                File::put($file->getRealPath(), $updated);
+                $this->info('Updated blade namespace: ' . $file->getRelativePathname());
+            }
+        }
     }
 
     protected function updateComposerAutoload()

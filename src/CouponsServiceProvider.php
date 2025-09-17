@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Coupons;
+namespace admin\coupons;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +12,7 @@ class CouponsServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        // Load views from published module, resource path, and package fallback
+        // Load routes, views, migrations from the package  
         $this->loadViewsFrom([
             base_path('Modules/Coupons/resources/views'), // Published module views first
             resource_path('views/admin/coupon'), // Published views second
@@ -36,11 +36,13 @@ class CouponsServiceProvider extends ServiceProvider
             $this->loadMigrationsFrom(base_path('Modules/Coupons/database/migrations'));
         }
 
+        // Standard publishing for non-PHP files
         $this->publishes([
             __DIR__ . '/../config/' => base_path('Modules/Coupons/config/'),
             __DIR__ . '/../database/migrations' => base_path('Modules/Coupons/database/migrations'),
             __DIR__ . '/../resources/views' => base_path('Modules/Coupons/resources/views/'),
         ], 'coupons');
+
 
         $this->registerAdminRoutes();
     }
@@ -51,17 +53,21 @@ class CouponsServiceProvider extends ServiceProvider
             return; // Avoid errors before migration
         }
 
-        $slug = DB::table('admins')->latest()->value('website_slug') ?? 'admin';
+        $admin = DB::table('admins')
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        $slug = $admin->website_slug ?? 'admin';
 
         Route::middleware('web')
             ->prefix("{$slug}/admin") // dynamic prefix
             ->group(function () {
-                // Load routes from published module first, then fallback to package
-                if (file_exists(base_path('Modules/Coupons/routes/web.php'))) {
-                    $this->loadRoutesFrom(base_path('Modules/Coupons/routes/web.php'));
-                } else {
-                    $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
-                }
+            // Load routes from published module first, then fallback to package
+            if (file_exists(base_path('Modules/Coupons/routes/web.php'))) {
+                $this->loadRoutesFrom(base_path('Modules/Coupons/routes/web.php'));
+            } else {
+                $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+            }
             });
     }
 
@@ -70,10 +76,9 @@ class CouponsServiceProvider extends ServiceProvider
         // Register the publish command
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \Admin\Coupons\Console\Commands\PublishCouponsModuleCommand::class,
-                \Admin\Coupons\Console\Commands\CheckModuleStatusCommand::class,
-                \Admin\Coupons\Console\Commands\DebugCouponsCommand::class,
-                \Admin\Coupons\Console\Commands\TestViewResolutionCommand::class,
+                \admin\coupons\Console\Commands\PublishCouponsModuleCommand::class,
+                \admin\coupons\Console\Commands\CheckModuleStatusCommand::class,
+                \admin\coupons\Console\Commands\DebugCouponsCommand::class,
             ]);
         }
     }
@@ -126,15 +131,16 @@ class CouponsServiceProvider extends ServiceProvider
     {
         // Define namespace mappings
         $namespaceTransforms = [
-            'namespace Admin\\Coupons\\Controllers;' => 'namespace Modules\\Coupons\\app\\Http\\Controllers\\Admin;',
-            'namespace Admin\\Coupons\\Models;' => 'namespace Modules\\Coupons\\app\\Models;',
-            'namespace Admin\\Coupons\\Requests;' => 'namespace Modules\\Coupons\\app\\Http\\Requests;',
-            'namespace Admin\\Coupons\\Pivots;' => 'namespace Modules\\Coupons\\app\\Pivots;',
-            'use Admin\\Coupons\\Controllers\\' => 'use Modules\\Coupons\\app\\Http\\Controllers\\Admin\\',
-            'use Admin\\Coupons\\Models\\' => 'use Modules\\Coupons\\app\\Models\\',
-            'use Admin\\Coupons\\Requests\\' => 'use Modules\\Coupons\\app\\Http\\Requests\\',
-            'use Admin\\Coupons\\Pivots\\' => 'use Modules\\Coupons\\app\\Pivots\\',
-            'Admin\\Coupons\\Controllers\\CouponManagerController' => 'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
+            // Main namespace transformations
+            'namespace admin\\coupons\\Controllers;' => 'namespace Modules\\Coupons\\app\\Http\\Controllers\\Admin;',
+            'namespace admin\\coupons\\Models;' => 'namespace Modules\\Coupons\\app\\Models;',
+            'namespace admin\\coupons\\Requests;' => 'namespace Modules\\Coupons\\app\\Http\\Requests;',
+            'namespace admin\\coupons\\Pivots;' => 'namespace Modules\\Coupons\\app\\Pivots;',
+            'use admin\\coupons\\Controllers\\' => 'use Modules\\Coupons\\app\\Http\\Controllers\\Admin\\',
+            'use admin\\coupons\\Models\\' => 'use Modules\\Coupons\\app\\Models\\',
+            'use admin\\coupons\\Requests\\' => 'use Modules\\Coupons\\app\\Http\\Requests\\',
+            'use admin\\coupons\\Pivots\\' => 'use Modules\\Coupons\\app\\Pivots\\',
+            'admin\\coupons\\Controllers\\CouponManagerController' => 'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
         ];
 
         // Apply transformations
@@ -149,8 +155,6 @@ class CouponsServiceProvider extends ServiceProvider
             $content = $this->transformModelNamespaces($content);
         } elseif (str_contains($sourceFile, 'Requests')) {
             $content = $this->transformRequestNamespaces($content);
-        } elseif (str_contains($sourceFile, 'Pivots')) {
-            $content = $this->transformPivotNamespaces($content);
         } elseif (str_contains($sourceFile, 'routes')) {
             $content = $this->transformRouteNamespaces($content);
         }
@@ -165,20 +169,36 @@ class CouponsServiceProvider extends ServiceProvider
     {
         // Update use statements for models and requests
         $content = str_replace(
-            'use Admin\\Coupons\\Models\\Coupon;',
+            'use admin\\coupons\\Models\\Coupon;',
             'use Modules\\Coupons\\app\\Models\\Coupon;',
             $content
         );
         $content = str_replace(
-            'use Admin\\Coupons\\Requests\\StoreCouponRequest;',
+            'use admin\\categories\\Models\\Category;',
+            'use Modules\\Categories\\app\\Models\\Category;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\products\\Models\\Product;',
+            'use Modules\\Products\\app\\Models\\Product;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\courses\\Models\\Course;',
+            'use Modules\\Courses\\app\\Models\\Course;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\coupons\\Requests\\StoreCouponRequest;',
             'use Modules\\Coupons\\app\\Http\\Requests\\StoreCouponRequest;',
             $content
         );
         $content = str_replace(
-            'use Admin\\Coupons\\Requests\\UpdateCouponRequest;',
+            'use admin\\coupons\\Requests\\UpdateCouponRequest;',
             'use Modules\\Coupons\\app\\Http\\Requests\\UpdateCouponRequest;',
             $content
         );
+
         return $content;
     }
 
@@ -188,6 +208,21 @@ class CouponsServiceProvider extends ServiceProvider
     protected function transformModelNamespaces($content)
     {
         // Any model-specific transformations
+        $content = str_replace(
+            'use admin\\categories\\Models\\Category;',
+            'use Modules\\Categories\\app\\Models\\Category;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\products\\Models\\Product;',
+            'use Modules\\Products\\app\\Models\\Product;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\courses\\Models\\Course;',
+            'use Modules\\Courses\\app\\Models\\Course;',
+            $content
+        );
         return $content;
     }
 
@@ -197,12 +232,6 @@ class CouponsServiceProvider extends ServiceProvider
     protected function transformRequestNamespaces($content)
     {
         // Any request-specific transformations
-        return $content;
-    }
-
-    protected function transformPivotNamespaces($content)
-    {
-        // Any pivot-specific transformations if needed
         return $content;
     }
 
@@ -217,6 +246,7 @@ class CouponsServiceProvider extends ServiceProvider
             'Modules\\Coupons\\app\\Http\\Controllers\\Admin\\CouponManagerController',
             $content
         );
+
         return $content;
     }
 }

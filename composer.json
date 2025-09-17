@@ -6,13 +6,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Admin\\Coupons\\": "src/"
+            "admin\\coupons\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Admin\\Coupons\\CouponsServiceProvider"
+                "admin\\coupons\\CouponsServiceProvider"
             ]
         }
     },
