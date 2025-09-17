@@ -139,7 +139,7 @@
                         <h4 class="card-title">Coupon Applicability</h4>
                     </div>
                     <div class="card-body">
-                        @if(class_exists(\admin\products\Models\Product::class) && class_exists(\admin\categories\Models\Category::class))
+                        @if(admin\coupons\Models\Coupon::isModuleInstalled('products') && admin\coupons\Models\Coupon::isModuleInstalled('categories'))
                         <div class="form-group">
                             <label for="categories">Categories</label>
                             <select name="categories[]" id="categories" multiple class="form-control select2">
@@ -157,7 +157,7 @@
                             </select>
                         </div>
                         @endif
-                        @if(class_exists('\admin\courses\Models\Course'))
+                        @if(admin\coupons\Models\Coupon::isModuleInstalled('courses'))
                         <div class="form-group">
                             <label for="courses">Courses</label>
                             <select name="courses[]" id="courses" multiple class="form-control select2">

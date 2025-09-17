@@ -91,7 +91,7 @@
                                     </div>
 
                                     <div class="row">
-                                        @if (class_exists(\admin\categories\Models\Category::class))
+                                        @if (admin\coupons\Models\Coupon::isModuleInstalled('categories'))
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Categories:</label>
@@ -107,7 +107,7 @@
                                             </div>
                                         </div>
                                         @endif
-                                        @if (class_exists(\admin\products\Models\Product::class))
+                                        @if (admin\coupons\Models\Coupon::isModuleInstalled('products'))
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Products:</label>
@@ -124,7 +124,7 @@
                                         </div>
                                         @endif
 
-                                        @if (class_exists(\admin\courses\Models\Course::class))
+                                        @if (admin\coupons\Models\Coupon::isModuleInstalled('courses'))
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Courses:</label>

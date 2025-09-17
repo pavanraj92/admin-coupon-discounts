@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Coupons\Console\Commands;
+namespace admin\coupons\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -44,7 +44,7 @@ class CheckModuleStatusCommand extends Command
         $controllerPath = base_path('Modules/Coupons/app/Http/Controllers/Admin/CouponManagerController.php');
         if (File::exists($controllerPath)) {
             $content = File::get($controllerPath);
-            if (str_contains($content, 'namespace Modules\Coupons\app\Http\Controllers\Admin;')) {
+            if (str_contains($content, 'namespace Modules\Coupons\app\Http\Controllers\CouponManagerController;')) {
                 $this->info("\n✅ Controller namespace: CORRECT");
             } else {
                 $this->error("\n❌ Controller namespace: INCORRECT");
